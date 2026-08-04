@@ -39,7 +39,7 @@ export default async function Home({
   return (
     <main className="max-w-6xl mx-auto px-6 py-10">
       <h1 className="text-2xl font-bold mb-6">Camisas disponíveis</h1>
-
+      
       <form action="/" method="GET" className="mb-6">
         {categoria && <input type="hidden" name="categoria" value={categoria} />}
         <input
@@ -50,7 +50,6 @@ export default async function Home({
           className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg"
         />
       </form>
-      
       <div className="flex gap-2 mb-8 flex-wrap">
         <Link
           href="/"
@@ -75,9 +74,10 @@ export default async function Home({
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
         {produtos?.map((produto) => (
-          <div
+          <Link
             key={produto.id}
-            className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+            href={`/produto/${produto.id}`}
+            className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow block"
           >
             <img
               src={produto.foto_url}
@@ -93,7 +93,7 @@ export default async function Home({
                 R$ {produto.preco.toFixed(2).replace('.', ',')}
               </p>
             </div>
-          </div>
+          </Link>
         ))}
 
         {produtos?.length === 0 && (
