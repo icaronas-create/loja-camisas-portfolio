@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Loja de Camisas",
+  title: "Pratas da Casa",
   description: "Camisas de time de brechó",
 };
 

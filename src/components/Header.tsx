@@ -10,7 +10,7 @@ export default function Header() {
     <header className="border-b border-gray-200">
       <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
         <Link href="/" className="font-bold text-lg">
-          Camisas do Time
+          Pratas da Casa
         </Link>
 
         <Link href="/carrinho" className="relative flex items-center gap-1">
