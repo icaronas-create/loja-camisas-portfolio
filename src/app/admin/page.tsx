@@ -34,6 +34,13 @@ export default async function AdminPage() {
       >
         + Novo produto
       </Link>
+      
+      <Link
+        href="/admin/pedidos"
+        className="inline-block text-sm underline text-gray-600 mb-6 ml-4"
+      >
+        Ver pedidos
+      </Link>
 
       <div className="border border-gray-200 rounded-lg divide-y">
         {produtos?.map((produto) => (
