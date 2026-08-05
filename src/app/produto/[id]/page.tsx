@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { notFound } from 'next/navigation'
+import BotaoCarrinho from './BotaoCarrinho'
 
 export default async function ProdutoPage({
   params,
@@ -42,12 +43,7 @@ export default async function ProdutoPage({
             <p className="text-sm text-gray-700 mt-4">{produto.descricao}</p>
           )}
 
-          <button
-            disabled={produto.status !== 'disponivel'}
-            className="w-full mt-6 bg-black text-white py-3 rounded-lg font-semibold disabled:bg-gray-300"
-          >
-            {produto.status === 'disponivel' ? 'Adicionar ao carrinho' : 'Esgotado'}
-          </button>
+          <BotaoCarrinho produto={produto} />
         </div>
       </div>
     </main>
