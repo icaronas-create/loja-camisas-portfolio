@@ -47,7 +47,8 @@ export default function CheckoutPage() {
       return
     }
 
-    alert(`Pedido(s) criado(s)! IDs: ${resultado.pedidos.map((p: any) => p.id).join(', ')}`)
+        // Redireciona pro Mercado Pago
+    window.location.href = resultado.checkoutUrl
   }
 
   return (
