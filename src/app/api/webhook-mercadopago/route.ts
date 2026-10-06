@@ -1,11 +1,31 @@
 import { createAdminClient } from '@/lib/supabase-admin'
 import { payment } from '@/lib/mercadopago'
+import { WebhookSignatureValidator } from 'mercadopago'
 import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
+  const url = new URL(request.url)
   const body = await request.json()
 
-  // O Mercado Pago manda vários tipos de notificação; só nos importa "payment"
+  // --- Validação de assinatura: por enquanto só REGISTRA o resultado, não bloqueia nada ainda.
+  // Isso evita quebrar o fluxo que já está funcionando, até confirmarmos que bate certo.
+  const dataIdParaAssinatura = url.searchParams.get('data.id') || String(body?.data?.id ?? '')
+  const xSignature = request.headers.get('x-signature') ?? ''
+  const xRequestId = request.headers.get('x-request-id') ?? ''
+
+  try {
+    WebhookSignatureValidator.validate({
+      xSignature,
+      xRequestId,
+      dataId: dataIdParaAssinatura,
+      secret: process.env.MERCADOPAGO_WEBHOOK_SECRET!,
+    })
+    console.log('Assinatura do webhook: válida')
+  } catch (err) {
+    console.error('Assinatura do webhook: INVÁLIDA', { xSignature, xRequestId, dataIdParaAssinatura })
+  }
+  // --- fim da validação (ainda não bloqueia) ---
+
   if (body?.type !== 'payment' || !body?.data?.id) {
     return NextResponse.json({ received: true })
   }
@@ -25,8 +45,6 @@ export async function POST(request: Request) {
 
     if (pagamento.status === 'approved') {
       for (const pedidoId of idsPedidos) {
-        // Idempotente: só atualiza (e só marca o produto como vendido) se esse
-        // pedido ainda não tiver sido processado como aprovado antes
         const { data: pedidoAtualizado } = await supabase
           .from('pedidos')
           .update({
@@ -40,8 +58,6 @@ export async function POST(request: Request) {
           .single()
 
         if (pedidoAtualizado) {
-          // Só marca como vendido se ainda estiver disponível — evita vender
-          // a mesma peça duas vezes se duas notificações chegarem quase juntas
           await supabase
             .from('produtos')
             .update({ status: 'vendido' })
@@ -59,13 +75,10 @@ export async function POST(request: Request) {
         })
         .in('id', idsPedidos)
     }
-    // outros status (pending, in_process etc.) não fazem nada ainda — espera a próxima notificação
 
     return NextResponse.json({ received: true })
   } catch (error) {
     console.error('Erro no webhook do Mercado Pago:', error)
-    // Propositalmente NÃO retorna 200 aqui: isso faz o Mercado Pago reenviar
-    // a notificação mais tarde, em vez de desistir silenciosamente
     return NextResponse.json({ error: 'Erro ao processar notificação' }, { status: 500 })
   }
 }
