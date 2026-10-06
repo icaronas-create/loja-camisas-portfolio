@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       xSignature,
       xRequestId,
       dataId: dataIdParaAssinatura,
-      secret: process.env.MERCADOPAGO_WEBHOOK_SECRET!,
+      secret: (process.env.MERCADOPAGO_WEBHOOK_SECRET ?? '').trim(),
     })
     console.log('Assinatura do webhook: válida')
   } catch (err) {
