@@ -7,9 +7,18 @@ export async function POST(request: Request) {
   const url = new URL(request.url)
   const body = await request.json()
 
-  // --- Validação de assinatura: por enquanto só REGISTRA o resultado, não bloqueia nada ainda.
-  // Isso evita quebrar o fluxo que já está funcionando, até confirmarmos que bate certo.
-  const dataIdParaAssinatura = url.searchParams.get('data.id') || String(body?.data?.id ?? '')
+  // O Mercado Pago manda vários formatos de notificação pra essa mesma URL
+  // (merchant_order, topic_merchant_order_wh etc). Só nos interessa "payment" —
+  // ignoramos o resto ANTES de tentar validar assinatura, porque os outros
+  // formatos nem têm os mesmos campos.
+  if (body?.type !== 'payment' || !body?.data?.id) {
+    return NextResponse.json({ received: true })
+  }
+
+  const paymentId = body.data.id
+
+  // --- Validação de assinatura: por enquanto só REGISTRA o resultado, não bloqueia nada ainda ---
+  const dataIdParaAssinatura = url.searchParams.get('data.id') || String(paymentId)
   const xSignature = request.headers.get('x-signature') ?? ''
   const xRequestId = request.headers.get('x-request-id') ?? ''
 
@@ -22,15 +31,15 @@ export async function POST(request: Request) {
     })
     console.log('Assinatura do webhook: válida')
   } catch (err) {
-    console.error('Assinatura do webhook: INVÁLIDA', { xSignature, xRequestId, dataIdParaAssinatura })
+    console.error('Assinatura do webhook: INVÁLIDA', {
+      motivo: err instanceof Error ? err.message : err,
+      secretDefinida: Boolean(process.env.MERCADOPAGO_WEBHOOK_SECRET),
+      xSignature,
+      xRequestId,
+      dataIdParaAssinatura,
+    })
   }
   // --- fim da validação (ainda não bloqueia) ---
-
-  if (body?.type !== 'payment' || !body?.data?.id) {
-    return NextResponse.json({ received: true })
-  }
-
-  const paymentId = body.data.id
 
   try {
     const pagamento = await payment.get({ id: paymentId })
