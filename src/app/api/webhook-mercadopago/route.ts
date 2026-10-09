@@ -2,6 +2,7 @@ import { createAdminClient } from '@/lib/supabase-admin'
 import { payment } from '@/lib/mercadopago'
 import { WebhookSignatureValidator } from 'mercadopago'
 import { NextResponse } from 'next/server'
+import { resend } from '@/lib/resend'
 
 export async function POST(request: Request) {
   const url = new URL(request.url)
@@ -86,8 +87,19 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ received: true })
-  } catch (error) {
+    } catch (error) {
     console.error('Erro no webhook do Mercado Pago:', error)
+
+    try {
+      await resend.emails.send({
+        from: 'Pratas da Casa <onboarding@resend.dev>',
+        to: 'pratasdacasa.club@gmail.com',
+        subject: 'Falha no webhook do Mercado Pago',
+        text: `O webhook de pagamento falhou ao processar uma notificação.\n\nPayment ID: ${paymentId}\nErro: ${error instanceof Error ? error.message : String(error)}`,
+      })
+    } catch (emailError) {
+      console.error('Falha ao enviar e-mail de alerta:', emailError)
+    }
+
     return NextResponse.json({ error: 'Erro ao processar notificação' }, { status: 500 })
   }
-}
