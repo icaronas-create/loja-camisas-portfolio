@@ -1,5 +1,84 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Oswald:wght@500;700&display=swap');
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-dark: #0f1010;
+}
+
+/* Isto resolve as barras brancas laterais! */
+html, body {
+  background-color: #0f1010 !important;
+  color: #e5e5e5 !important;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+.font-display {
+  font-family: 'Archivo Black', sans-serif;
+}
+
+.font-condensed {
+  font-family: 'Oswald', sans-serif;
+}
+
+.font-mono-tech {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Textura de granulado vintage (Film Grain) */
+.bg-noise {
+  background-color: #0f1010;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.045'/%3E%3C/svg%3E");
+}
+
+/* Efeito de fita/ticket rasgado */
+.ticket-divider {
+  background: repeating-linear-gradient(
+    90deg,
+    #c8aa6e 0px,
+    #c8aa6e 45px,
+    #b39356 45px,
+    #b39356 47px,
+    #c8aa6e 47px,
+    #c8aa6e 95px
+  );
+  position: relative;
+  height: 24px;
+  clip-path: polygon(
+    0% 15%, 3% 0%, 7% 25%, 12% 5%, 18% 20%, 24% 0%, 31% 18%, 38% 2%, 
+    45% 22%, 52% 0%, 60% 15%, 67% 4%, 74% 24%, 82% 0%, 89% 18%, 95% 5%, 100% 20%,
+    100% 85%, 96% 100%, 91% 78%, 85% 95%, 78% 80%, 71% 100%, 63% 82%, 56% 98%, 
+    49% 78%, 42% 100%, 35% 85%, 28% 96%, 21% 76%, 14% 100%, 8% 82%, 3% 95%, 0% 80%
+  );
+  opacity: 0.9;
+}
+
+/* Moldura interna estilo Polaroid / Acervo */
+.polaroid-frame {
+  border: 4px solid #d4d2c8;
+  background-color: #1c1d1d;
+  box-shadow: inset 0 0 25px rgba(0,0,0,0.85), 0 6px 16px rgba(0,0,0,0.5);
+}
+
+/* Etiquetas anguladas */
+.badge-vintage-yellow {
+  background-color: #cbb667;
+  color: #111;
+  transform: rotate(-5deg);
+  box-shadow: 2px 3px 6px rgba(0,0,0,0.6);
+}
+
+.badge-vintage-rust {
+  background-color: #b58d76;
+  color: #111;
+  transform: rotate(-4deg);
+  border: 1px dashed #3a2b22;
+  box-shadow: 2px 3px 6px rgba(0,0,0,0.6);
+}
 :root {
   --background: #ffffff;
   --foreground: #171717;
