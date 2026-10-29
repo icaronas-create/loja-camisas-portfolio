@@ -37,7 +37,11 @@ export default function Header() {
     }
   }
 
-  const count = itens.reduce((sum, item) => sum + item.qty, 0)
+  // Soma segura independente se usa qty ou quantidade
+  const count = itens.reduce((sum: number, item: any) => {
+    const qtd = item.qty ?? item.quantidade ?? 1
+    return sum + qtd
+  }, 0)
 
   return (
     <>
@@ -54,7 +58,7 @@ export default function Header() {
       <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur text-foreground w-full">
         <div className="relative flex h-20 w-full items-center justify-between px-6 md:px-12">
           
-          {/* Esquerda: Menu e Links (colado na extremidade esquerda) */}
+          {/* Esquerda: Menu e Links */}
           <div className="flex items-center flex-1">
             <button aria-label="Abrir menu" className="md:hidden mr-4" onClick={() => setMenuOpen(true)}>
               <Menu className="size-6" />
@@ -79,7 +83,7 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Direita: Ícones (colado na extremidade direita) */}
+          {/* Direita: Ícones */}
           <div className="flex items-center justify-end gap-6 flex-1">
             <button aria-label="Buscar" onClick={() => setSearchOpen((s) => !s)} className="hover:text-accent transition">
               {searchOpen ? <X className="size-5" /> : <Search className="size-5" />}
