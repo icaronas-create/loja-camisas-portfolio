@@ -9,6 +9,7 @@ import {
   ScanSearch,
   PackageCheck,
 } from 'lucide-react'
+import Newsletter from '@/components/Newsletter'
 
 type Categoria = {
   id: string
@@ -52,14 +53,25 @@ const trustBadges = [
   { Icon: RefreshCw, title: 'Troca em 7 dias', desc: 'Sem burocracia' },
 ]
 
+// Mapeamento dos links do rodapé com URLs funcionais ou âncoras
 const footerSections = [
   {
     title: 'Ajuda',
-    links: ['Trocas e devoluções', 'Prazos de entrega', 'Guia de tamanhos', 'Fale conosco'],
+    links: [
+      { label: 'Trocas e devoluções', href: '/#verificacao' },
+      { label: 'Prazos de entrega', href: '/#verificacao' },
+      { label: 'Guia de tamanhos', href: '/#categorias' },
+      { label: 'Fale conosco', href: 'https://wa.me/' }, // Pode colocar o link do WhatsApp comercial aqui
+    ],
   },
   {
     title: 'Institucional',
-    links: ['Sobre nós', 'Como verificamos', 'Venda sua camisa', 'Política de privacidade'],
+    links: [
+      { label: 'Sobre nós', href: '/#loja' },
+      { label: 'Como verificamos', href: '/#verificacao' },
+      { label: 'Venda sua camisa', href: 'https://wa.me/' },
+      { label: 'Política de privacidade', href: '#' },
+    ],
   },
 ]
 
@@ -333,28 +345,10 @@ export default async function Home({
         </div>
       </section>
 
-      {/* Newsletter */}
-      <section className="bg-primary text-primary-foreground">
-        <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-5 py-14 text-center">
-          <h2 className="text-2xl font-black uppercase">Receba os novos garimpos primeiro</h2>
-          <form className="flex w-full max-w-md">
-            <input
-              required
-              type="email"
-              placeholder="Seu e-mail"
-              className="flex-1 border border-primary-foreground/30 bg-transparent px-4 py-3 text-sm outline-none placeholder:text-primary-foreground/50"
-            />
-            <button
-              type="button"
-              className="bg-primary-foreground px-6 text-xs font-semibold uppercase tracking-widest text-primary"
-            >
-              Assinar
-            </button>
-          </form>
-        </div>
-      </section>
+      {/* Newsletter Interativa */}
+      <Newsletter />
 
-      {/* Rodapé */}
+      {/* Rodapé Funcional */}
       <footer className="border-t border-border">
         <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 md:grid-cols-5">
           <div className="md:col-span-2">
@@ -367,11 +361,11 @@ export default async function Home({
             <div key={section.title}>
               <p className="text-xs font-semibold uppercase tracking-widest">{section.title}</p>
               <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-                {section.links.map((linkText) => (
-                  <li key={linkText}>
-                    <a href="#" className="hover:text-foreground">
-                      {linkText}
-                    </a>
+                {section.links.map((link) => (
+                  <li key={link.label}>
+                    <Link href={link.href} className="hover:text-foreground transition-colors">
+                      {link.label}
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -380,13 +374,27 @@ export default async function Home({
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest">Redes sociais</p>
             <div className="mt-4 flex gap-4 text-sm text-muted-foreground">
-              <a href="#" className="hover:text-foreground">Instagram</a>
-              <a href="#" className="hover:text-foreground">YouTube</a>
+              <a 
+                href="https://instagram.com" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="hover:text-foreground transition-colors"
+              >
+                Instagram
+              </a>
+              <a 
+                href="https://youtube.com" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="hover:text-foreground transition-colors"
+              >
+                YouTube
+              </a>
             </div>
             <p className="mt-6 text-xs font-semibold uppercase tracking-widest">Pagamento</p>
             <div className="mt-3 flex flex-wrap gap-2">
               {['Pix', 'Visa', 'Master', 'Elo', 'Boleto'].map((m) => (
-                <span key={m} className="border border-border px-2 py-1 text-[10px] font-semibold uppercase">
+                <span key={m} className="border border-border px-2 py-1 text-[10px] font-semibold uppercase select-none">
                   {m}
                 </span>
               ))}
