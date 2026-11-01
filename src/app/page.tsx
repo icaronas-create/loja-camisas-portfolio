@@ -375,20 +375,12 @@ export default async function Home({
             <p className="text-xs font-semibold uppercase tracking-widest">Redes sociais</p>
             <div className="mt-4 flex gap-4 text-sm text-muted-foreground">
               <a 
-                href="https://instagram.com" 
+                href="https://www.instagram.com/pratasdacasa.club/" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="hover:text-foreground transition-colors"
               >
                 Instagram
-              </a>
-              <a 
-                href="https://youtube.com" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="hover:text-foreground transition-colors"
-              >
-                YouTube
               </a>
             </div>
             <p className="mt-6 text-xs font-semibold uppercase tracking-widest">Pagamento</p>
