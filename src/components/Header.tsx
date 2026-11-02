@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCarrinho } from '@/lib/cart-context'
 import { Search, User, ShoppingBag, Menu, X } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 
 const notices = [
   "Primeira compra: cupom PRATA10 com 10% off",
@@ -26,6 +27,20 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [query, setQuery] = useState('')
+  const [user, setUser] = useState<any>(null)
+
+  // Verifica se o usuário está logado
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+    })
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -37,7 +52,6 @@ export default function Header() {
     }
   }
 
-  // Soma segura independente se usa qty ou quantidade
   const count = itens.reduce((sum: number, item: any) => {
     const qtd = item.qty ?? item.quantidade ?? 1
     return sum + qtd
@@ -45,7 +59,6 @@ export default function Header() {
 
   return (
     <>
-      {/* Barra de avisos animada no topo */}
       <div className="overflow-hidden bg-primary py-2 text-xs text-primary-foreground select-none">
         <div className="flex w-max animate-marquee gap-16 whitespace-nowrap">
           {[...notices, ...notices, ...notices, ...notices].map((n, i) => (
@@ -54,11 +67,9 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Cabeçalho Principal (Ocupa 100% da largura) */}
       <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur text-foreground w-full">
         <div className="relative flex h-20 w-full items-center justify-between px-6 md:px-12">
           
-          {/* Esquerda: Menu e Links */}
           <div className="flex items-center flex-1">
             <button aria-label="Abrir menu" className="md:hidden mr-4" onClick={() => setMenuOpen(true)}>
               <Menu className="size-6" />
@@ -72,7 +83,6 @@ export default function Header() {
             </nav>
           </div>
 
-          {/* Centro: Logotipo perfeitamente centralizado na tela */}
           <div className="absolute left-1/2 -translate-x-1/2 flex justify-center">
             <Link href="/" aria-label="Pratas da Casa">
               <img 
@@ -83,14 +93,20 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Direita: Ícones */}
           <div className="flex items-center justify-end gap-6 flex-1">
             <button aria-label="Buscar" onClick={() => setSearchOpen((s) => !s)} className="hover:text-accent transition">
               {searchOpen ? <X className="size-5" /> : <Search className="size-5" />}
             </button>
-            <Link href="/login" aria-label="Minha conta" className="hover:text-accent transition">
-            <User className="hidden size-5 sm:block" />
+            
+            {/* Ícone de Usuário Dinâmico */}
+            <Link 
+              href={user ? "/perfil" : "/login"} 
+              aria-label="Minha conta" 
+              className="hover:text-accent transition"
+            >
+              <User className="hidden size-5 sm:block" />
             </Link>
+
             <Link href="/carrinho" aria-label="Abrir carrinho" className="relative hover:text-accent transition">
               <ShoppingBag className="size-5" />
               {count > 0 && (
@@ -100,10 +116,8 @@ export default function Header() {
               )}
             </Link>
           </div>
-
         </div>
 
-        {/* Barra de Busca Expansível */}
         {searchOpen && (
           <div className="border-t border-border px-6 py-4 md:px-12 bg-background">
             <form onSubmit={handleSearch} className="mx-auto flex max-w-2xl items-center gap-3 border-b border-foreground pb-2">
@@ -120,7 +134,6 @@ export default function Header() {
         )}
       </header>
 
-      {/* Menu Mobile Lateral */}
       {menuOpen && (
         <div className="fixed inset-0 z-50 md:hidden text-foreground">
           <div className="absolute inset-0 bg-foreground/40" onClick={() => setMenuOpen(false)} />
