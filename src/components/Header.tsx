@@ -88,7 +88,9 @@ export default function Header() {
             <button aria-label="Buscar" onClick={() => setSearchOpen((s) => !s)} className="hover:text-accent transition">
               {searchOpen ? <X className="size-5" /> : <Search className="size-5" />}
             </button>
+            <Link href="/login" aria-label="Minha conta" className="hover:text-accent transition">
             <User className="hidden size-5 sm:block" />
+            </Link>
             <Link href="/carrinho" aria-label="Abrir carrinho" className="relative hover:text-accent transition">
               <ShoppingBag className="size-5" />
               {count > 0 && (
