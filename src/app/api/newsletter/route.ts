@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase' // Ajuste o caminho se necessário
-import { resend } from '@/lib/resend' // Ajuste o caminho se necessário
+import { supabase } from '@/lib/supabase' 
 
 export async function POST(request: Request) {
   try {
@@ -15,32 +14,15 @@ export async function POST(request: Request) {
       .from('newsletter')
       .insert([{ email }])
 
-    // Se o erro for de duplicidade (código 23505), não há problema, o utilizador já está inscrito
     if (dbError && dbError.code !== '23505') {
-      throw new Error(dbError.message)
+      console.error('Erro no Supabase:', dbError)
+      return NextResponse.json({ error: 'Erro de BD: ' + dbError.message }, { status: 500 })
     }
 
-    // 2. Enviar o e-mail de boas-vindas com o cupão via Resend
-    const { error: emailError } = await resend.emails.send({
-      from: 'Pratas da Casa <contato@seusite.com>', // Substitua pelo seu domínio verificado no Resend
-      to: email,
-      subject: 'Bem-vindo(a) ao Pratas da Casa! ⚽ Seu cupão chegou',
-      html: `
-        <h2>Toda camisa tem uma história!</h2>
-        <p>Obrigado por se juntar à nossa lista VIP.</p>
-        <p>Utilize o cupão <strong>PRATA10</strong> na sua primeira compra e ganhe 10% de desconto.</p>
-        <br/>
-        <p>Fique atento, receberá os nossos novos garimpos antes de toda a gente!</p>
-      `,
-    })
-
-    if (emailError) {
-      throw new Error(emailError.message)
-    }
-
+    // Sucesso! (Disparo de e-mail desativado até configurar domínio próprio)
     return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error('Erro na newsletter:', error)
-    return NextResponse.json({ error: 'Erro ao processar a subscrição' }, { status: 500 })
+  } catch (error: any) {
+    console.error('Erro geral na API:', error)
+    return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 })
   }
 }

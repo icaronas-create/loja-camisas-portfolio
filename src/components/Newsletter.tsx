@@ -43,7 +43,7 @@ export default function Newsletter() {
         
         {success ? (
           <p className="flex items-center gap-2 text-sm text-accent">
-            <Check className="size-5" /> Pronto! O seu cupão foi enviado para o e-mail.
+            <Check className="size-5" /> Pronto! Você garantiu acesso antecipado às novidades.
           </p>
         ) : (
           <form onSubmit={handleSubscribe} className="flex w-full max-w-md flex-col gap-2">
