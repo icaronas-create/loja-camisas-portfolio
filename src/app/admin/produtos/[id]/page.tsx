@@ -12,6 +12,7 @@ type Produto = {
   tamanho: string
   preco: number
   foto_url: string
+  galeria?: string[] | null // <--- Adicionado aqui
   categoria_id: string
   descricao: string | null
   status: string
@@ -47,18 +48,18 @@ export default function EditarProdutoPage() {
     const supabase = createClient()
     const formData = new FormData(e.currentTarget)
 
+    // 1. Upload da foto principal (se houver nova)
     let fotoUrl = produto!.foto_url
     const fotoFile = formData.get('foto') as File
 
-    // Só faz upload de nova foto se o usuário escolheu um arquivo novo
     if (fotoFile && fotoFile.size > 0) {
-      const nomeArquivo = `${Date.now()}-${fotoFile.name}`
+      const nomeArquivo = `${Date.now()}-principal-${fotoFile.name}`
       const { error: uploadError } = await supabase.storage
         .from('fotos-produtos')
         .upload(nomeArquivo, fotoFile)
 
       if (uploadError) {
-        setErro('Erro ao enviar a foto: ' + uploadError.message)
+        setErro('Erro ao enviar a foto principal: ' + uploadError.message)
         setCarregando(false)
         return
       }
@@ -67,6 +68,25 @@ export default function EditarProdutoPage() {
       fotoUrl = data.publicUrl
     }
 
+    // 2. Upload das fotos da Galeria (se houver novas)
+    const galeriaFiles = formData.getAll('galeria_fotos') as File[]
+    let novaGaleria = produto!.galeria ? [...produto!.galeria] : []
+
+    for (const file of galeriaFiles) {
+      if (file && file.size > 0) {
+        const nomeArquivo = `${Date.now()}-galeria-${file.name}`
+        const { error: uploadError } = await supabase.storage
+          .from('fotos-produtos')
+          .upload(nomeArquivo, file)
+
+        if (!uploadError) {
+          const { data } = supabase.storage.from('fotos-produtos').getPublicUrl(nomeArquivo)
+          novaGaleria.push(data.publicUrl) // Adiciona a nova URL à lista
+        }
+      }
+    }
+
+    // 3. Atualizar no banco de dados
     const { error: updateError } = await supabase
       .from('produtos')
       .update({
@@ -76,6 +96,7 @@ export default function EditarProdutoPage() {
         tamanho: formData.get('tamanho') as string,
         preco: parseFloat(formData.get('preco') as string),
         foto_url: fotoUrl,
+        galeria: novaGaleria, // <--- Salvando a galeria atualizada
         categoria_id: formData.get('categoria_id') as string,
         descricao: formData.get('descricao') as string,
         status: formData.get('status') as string,
@@ -120,11 +141,22 @@ export default function EditarProdutoPage() {
     <main className="max-w-lg mx-auto px-6 py-10">
       <h1 className="text-xl font-bold mb-6">Editar produto</h1>
 
-      <img
-        src={produto.foto_url}
-        alt={produto.nome}
-        className="w-32 h-32 object-cover rounded-lg mb-4"
-      />
+      <div className="flex gap-2 overflow-x-auto mb-4 pb-2">
+        <img
+          src={produto.foto_url}
+          alt={produto.nome}
+          className="w-32 h-32 object-cover rounded-lg border-2 border-black"
+          title="Foto Principal"
+        />
+        {produto.galeria?.map((foto, idx) => (
+          <img
+            key={idx}
+            src={foto}
+            alt="Galeria"
+            className="w-32 h-32 object-cover rounded-lg border border-gray-300 opacity-80"
+          />
+        ))}
+      </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div>
@@ -214,9 +246,18 @@ export default function EditarProdutoPage() {
 
         <div>
           <label className="text-sm font-medium">
-            Trocar foto <span className="text-gray-400">(deixe em branco pra manter a atual)</span>
+            Trocar foto principal <span className="text-gray-400">(deixe em branco pra manter a atual)</span>
           </label>
           <input name="foto" type="file" accept="image/*" className="w-full mt-1" />
+        </div>
+
+        {/* NOVO CAMPO PARA A GALERIA */}
+        <div className="border border-dashed border-gray-400 p-4 rounded-lg bg-gray-50">
+          <label className="text-sm font-medium">
+            Adicionar fotos extras à galeria <br/>
+            <span className="text-gray-500 font-normal text-xs">Pode selecionar vários arquivos de uma vez. As novas fotos serão adicionadas às existentes.</span>
+          </label>
+          <input name="galeria_fotos" type="file" accept="image/*" multiple className="w-full mt-2" />
         </div>
 
         <div>

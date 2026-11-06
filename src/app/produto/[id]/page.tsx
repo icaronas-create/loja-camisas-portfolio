@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import { notFound } from 'next/navigation'
 import BotaoCarrinho from './BotaoCarrinho'
+import ProductGallery from '@/components/ProductGallery'
 
 export default async function ProdutoPage({
   params,
@@ -22,12 +23,7 @@ export default async function ProdutoPage({
   return (
     <main className="max-w-4xl mx-auto px-6 py-10">
       <div className="grid sm:grid-cols-2 gap-8">
-        <img
-          src={produto.foto_url}
-          alt={produto.nome}
-          className="w-full rounded-lg object-cover"
-        />
-
+        <ProductGallery fotoUrl={produto.foto_url} galeria={produto.galeria} />
         <div>
           <h1 className="text-2xl font-bold uppercase">{produto.nome}</h1>
           <p className="text-gray-500 mt-1">
