@@ -11,7 +11,7 @@ export default function TermosDeUsoPage() {
         
         {/* Data de atualização no padrão da imagem de referência */}
         <p className="text-muted-foreground text-sm mb-12 text-center md:text-left">
-          Última atualização: [Insira a data aqui]
+          Última atualização: 14/11/2026
         </p>
 
         {/* Corpo do texto: cor suave, entrelinhas relaxado e espaçamento entre parágrafos */}
