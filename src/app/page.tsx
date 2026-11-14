@@ -54,23 +54,23 @@ const trustBadges = [
 ]
 
 // Mapeamento dos links do rodapé com URLs funcionais ou âncoras
+// Mapeamento dos links do rodapé com URLs funcionais ou âncoras
 const footerSections = [
   {
     title: 'Ajuda',
     links: [
-      { label: 'Trocas e devoluções', href: '/#verificacao' },
-      { label: 'Prazos de entrega', href: '/#verificacao' },
-      { label: 'Guia de tamanhos', href: '/#categorias' },
-      { label: 'Fale conosco', href: 'https://wa.me/' }, // Pode colocar o link do WhatsApp comercial aqui
+      { label: 'Trocas e devoluções', href: '/trocas' },
+      { label: 'Fale conosco', href: 'https://wa.me/5521992430183' },
     ],
   },
   {
     title: 'Institucional',
     links: [
-      { label: 'Sobre nós', href: '/#loja' },
+      { label: 'Sobre nós', href: '/sobre' },
       { label: 'Como verificamos', href: '/#verificacao' },
-      { label: 'Venda sua camisa', href: 'https://wa.me/' },
-      { label: 'Política de privacidade', href: '#' },
+      { label: 'Venda sua camisa', href: 'https://wa.me/5521992430183' },
+      { label: 'Política de privacidade', href: '/privacidade' },
+      { label: 'Termos de uso', href: '/termos' },
     ],
   },
 ]
